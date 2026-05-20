@@ -20,6 +20,9 @@ provides:
     - name: speckit.git.feature
       file: commands/speckit.git.feature.md
       description: "Create a feature branch with sequential or timestamp numbering"
+    - name: speckit.git.feature.worktree
+      file: commands/speckit.git.feature.worktree.md
+      description: "Create a feature branch AND a sibling git worktree in one step"
     - name: speckit.git.validate
       file: commands/speckit.git.validate.md
       description: "Validate current branch follows feature branch naming conventions"
