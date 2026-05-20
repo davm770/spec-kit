@@ -380,17 +380,21 @@ if [ "$DRY_RUN" != true ]; then
 
         # Propagate spec-kit scaffolding into the new worktree.
         #
-        # `.specify/` and `specs/` are often untracked in the source repo (scaffolded
-        # by `specify init` but never committed). A fresh worktree starts from the
-        # branch tip, so without this step the new sibling directory is missing the
-        # spec-kit skills/templates and the slash commands won't autocomplete.
-        # We copy them only when they exist in the source AND are absent in the
-        # new worktree (the latter holds when they are untracked; if they were
-        # tracked, git already populated them).
-        for _scaffold_dir in .specify specs; do
+        # `.specify/`, `specs/`, and `.claude/skills/` are often untracked in the
+        # source repo (scaffolded by `specify init` but never committed). A fresh
+        # worktree starts from the branch tip, so without this step the new sibling
+        # directory is missing the spec-kit templates AND the agent slash-command
+        # skills, so /speckit-* won't autocomplete in an agent session launched
+        # there. Per-checkout state like .claude/settings.local.json is deliberately
+        # NOT copied.
+        # We copy each path only when it exists in the source AND is absent in the
+        # new worktree (the latter holds when the path is untracked; if it were
+        # tracked, git already populated it).
+        for _scaffold_dir in .specify specs .claude/skills; do
             src="$REPO_ROOT/$_scaffold_dir"
             dst="$WORKTREE_PATH/$_scaffold_dir"
             if [ -d "$src" ] && [ ! -e "$dst" ]; then
+                mkdir -p "$(dirname "$dst")"
                 if cp -R "$src" "$dst" 2>/dev/null; then
                     >&2 echo "[specify] Copied untracked $_scaffold_dir/ into new worktree"
                 else
